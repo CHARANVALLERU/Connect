@@ -1,0 +1,74 @@
+## Connect Core — Envoy Rate-Limiting Descriptor Schema
+## Enforces per-tier, per-route request quotas via Envoy's global rate-limit service (RLS).
+## Tier isolation: Elite routes have a distinct descriptor namespace from Premium routes.
+
+domain: connect_rate_limit
+
+descriptors:
+
+  # =========================================================
+  # ELITE TIER — Generous quota, but still throttled to prevent
+  # infrastructure exhaustion. Separate namespace ensures
+  # Premium users can never consume Elite capacity.
+  # =========================================================
+  - key: tier
+    value: elite
+    descriptors:
+      - key: remote_address
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 600      # 10 req/s sustained burst
+
+      - key: path
+        value: /api/v1/elite/community/
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 300
+
+      - key: path
+        value: /api/v1/elite/dm/
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 120      # DM burst cap: 2 req/s
+
+  # =========================================================
+  # PREMIUM TIER — Standard quotas; strictly lower ceiling than
+  # Elite to prevent resource contention on shared infra.
+  # =========================================================
+  - key: tier
+    value: premium
+    descriptors:
+      - key: remote_address
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 120      # 2 req/s sustained
+
+      - key: path
+        value: /api/v1/community/
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 60
+
+      - key: path
+        value: /api/v1/dm/
+        rate_limit:
+          unit: MINUTE
+          requests_per_unit: 30       # Prevent DM spam vectors
+
+  # =========================================================
+  # TELEMETRY INGRESS — High-throughput behavioral event stream.
+  # Short burst window; server-side deduplication downstream.
+  # =========================================================
+  - key: path
+    value: /api/v1/telemetry/
+    rate_limit:
+      unit: SECOND
+      requests_per_unit: 50           # Per-client event flush
+
+  # =========================================================
+  # GLOBAL CATCH-ALL — Anonymous / unauthenticated fallback
+  # =========================================================
+  - key: remote_address
+    rate_limit:
+      unit: MINUTE
+      requests_per_unit: 30

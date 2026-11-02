@@ -1,0 +1,26 @@
+# Connect Core — Python Dependencies
+# Install with: pip install -r connect-core/requirements.txt
+#
+# Split into sections matching the system architecture.
+# Pin major versions; minor/patch left open for security patches.
+
+# ── CORE ─────────────────────────────────────────────────────────────────────
+pydantic>=2.0,<3.0          # Schema enforcement for Jev models, agent outputs
+python-dotenv>=1.0,<2.0     # .env loading for local dev
+
+# ── STREAMING ────────────────────────────────────────────────────────────────
+kafka-python>=2.0,<3.0      # Async Kafka producer (behavioral event dispatcher)
+
+# ── DATABASE ─────────────────────────────────────────────────────────────────
+psycopg2-binary>=2.9,<3.0   # PostgreSQL (transactional schema)
+neo4j>=5.0,<6.0             # Neo4j graph driver (community rings + GraphRAG)
+pinecone-client>=3.0,<4.0   # Pinecone vector store (tier-gated profile index)
+
+# ── LLM LAYER ────────────────────────────────────────────────────────────────
+# No heavy ML framework needed — local inference via Ollama/Hermes HTTP API.
+# urllib is stdlib; only lightweight orchestration helpers are listed.
+numpy>=1.26,<2.0            # Numeric ops for cognitive scalar calculations
+
+# ── TESTING ──────────────────────────────────────────────────────────────────
+pytest>=7.0,<9.0            # Test runner (alternative to unittest)
+pytest-timeout>=2.0,<3.0    # Enforces sub-100ms latency budgets in test suite

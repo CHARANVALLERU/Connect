@@ -1,0 +1,57 @@
+name: "Connect Core Security Guard"
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  regex-compliance-scanner:
+    name: "Scan for Raw Financial & Precision Coordinate Leaks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Scan for Raw Credit Card / Banking Numbers
+        run: |
+          echo "Scanning for unmasked PANs and banking identifiers..."
+          # Regex matches Visa, MC, Amex, IBAN patterns
+          if grep -rE --exclude-dir={.git,node_modules,dist,build} \
+            '\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|6(?:011|5[0-9]{2})[0-9]{12})\b' .; then
+            echo "::error::CRITICAL VIOLATION: Raw credit card or PAN pattern detected! The Zero-Raw-Storage Finance Mandate strictly prohibits storing raw financial data."
+            exit 1
+          fi
+
+      - name: Scan for High-Precision Lat/Long Coordinates
+        run: |
+          echo "Scanning for high-precision hardcoded GPS coordinates..."
+          # Regex checks for lat/long floating points with > 3 decimals in code/config files
+          if grep -rE --exclude-dir={.git,node_modules,dist,build,tests} \
+            '([-+]?([1-8]?\d(\.\d{4,})|90(\.0+)?)),\s*([-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d{4,})))' .; then
+            echo "::error::CRITICAL VIOLATION: High-precision coordinate pattern detected. Proximity Obscurity Framework requires H3 Geohash cells at server-level."
+            exit 1
+          fi
+
+      - name: Verify Tokenized Billing Schema Compliance
+        run: |
+          echo "Verifying all billing handlers use tokenized IAP references..."
+          python3 -c "
+          import os, sys, re
+          violations = []
+          for root, _, files in os.walk('connect-core'):
+              for f in files:
+                  if f.endswith(('.py', '.ts', '.tsx', '.sql')):
+                      path = os.path.join(root, f)
+                      with open(path, 'r', errors='ignore') as fp:
+                          content = fp.read()
+                          lines = [l for l in content.splitlines() if not l.strip().startswith(('--', '//', '#'))]
+                          clean_content = '\n'.join(lines)
+                          if re.search(r'tax_return|bank_statement|raw_card_number', clean_content, re.IGNORECASE):
+                              violations.append(path)
+          if violations:
+              print(f'Detected prohibited financial fields in: {violations}')
+              sys.exit(1)
+          print('Billing compliance check passed.')
+          "

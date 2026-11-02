@@ -1,0 +1,37 @@
+# Connect Core — CODEOWNERS
+# Restricts who may approve PRs touching security-critical boundaries.
+# Last matching rule wins. All protected paths require ≥1 CODEOWNER review before merge.
+
+# Global fallback — every file needs platform lead sign-off
+* @connect-lead-architect
+
+# ─── TIER ISOLATION CRITICAL PATHS ──────────────────────────────────────────
+# Elite/Premium boundary — any change requires security team second sign-off
+/connect-core/backend/engines/jev_layer/firewall/   @connect-sec-core @connect-lead-architect
+/connect-core/backend/api-gateway/                  @connect-sec-core @connect-lead-architect
+/connect-core/backend/api-gateway/ingress/          @connect-sec-core @connect-lead-architect
+
+# Streaming — Elite partition ACLs
+/connect-core/backend/streaming/kafka/secure-elite/ @connect-sec-core
+
+# ─── DATABASE SCHEMAS ────────────────────────────────────────────────────────
+# DBA sign-off required; prevents raw financial or GPS coordinate columns
+/connect-core/backend/database/                     @connect-compliance-lead
+/connect-core/backend/database/transactional/       @connect-compliance-lead @connect-sec-core
+
+# ─── SPATIAL OBSCURITY PIPELINES ─────────────────────────────────────────────
+/connect-core/backend/streaming/flink/spatial/      @connect-geospatial-lead @connect-sec-core
+
+# ─── LLM LAYER ───────────────────────────────────────────────────────────────
+# Agent logic, fusion weights (0.20–0.80 bounds), and external tool hooks
+/connect-core/backend/engines/llm_layer/            @connect-ai-ml-lead
+/connect-core/backend/engines/llm_layer/graphs/     @connect-ai-ml-lead @connect-sec-core
+/connect-core/backend/engines/llm_layer/tools/      @connect-ai-ml-lead @connect-sec-core
+
+# ─── CI/CD PIPELINES — Prevent security-guard bypass ─────────────────────────
+/.github/                                           @connect-sec-core @connect-lead-architect
+/.github/workflows/security-guard.yml              @connect-sec-core
+
+# ─── GOVERNANCE DOCUMENTS ────────────────────────────────────────────────────
+/connect-core/soul.md                               @connect-lead-architect
+/connect-core/docs/memory/regulatory/               @connect-compliance-lead @connect-sec-core

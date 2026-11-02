@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "name": "Lexical RAG False-Positive Guardrails",
+  "description": "Rules Grounding Agent B & System 1 to prevent visual and textual over-calling",
+  "rules": [
+    {
+      "id": "RULE-VISUAL-001",
+      "category": "Visual/Artistic Quirk",
+      "instruction": "Do NOT classify high-contrast, grain, black-and-white, or film filters as synthetic deepfake artifacts.",
+      "severity": "FALSE_POSITIVE_PROTECTION",
+      "action": "PASS_CLEAN"
+    },
+    {
+      "id": "RULE-VISUAL-002",
+      "category": "Cultural Variations",
+      "instruction": "Unconventional attire, traditional headwear, or exotic travel backdrops must never trigger anomaly flags.",
+      "severity": "FALSE_POSITIVE_PROTECTION",
+      "action": "PASS_CLEAN"
+    },
+    {
+      "id": "RULE-TEXT-001",
+      "category": "Niche Vernacular",
+      "instruction": "Conspiracy niche discussions (e.g., 'simulation hypothesis', 'blackrock liquidity') are treated as philosophical debate, NOT violent extremism unless explicit real-world threats are uttered.",
+      "severity": "FALSE_POSITIVE_PROTECTION",
+      "action": "PASS_CLEAN"
+    },
+    {
+      "id": "RULE-FIN-001",
+      "category": "Financial Privacy",
+      "instruction": "Any user attempting to upload a tax return, W2, bank screenshot, or credit card must be immediately rejected with an instruction to verify via Apple IAP/Google Play.",
+      "severity": "MANDATORY_REGULATORY_BLOCK",
+      "action": "PURGE_AND_BLOCK"
+    }
+  ]
+}

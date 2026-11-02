@@ -1,0 +1,86 @@
+version: "1.0"
+description: "Connect Streaming Partitioning Strategy - Premium vs. Elite Topic Layout"
+
+clusters:
+  connect-primary:
+    bootstrap_servers: "localhost:9092"
+    security_protocol: "SASL_SSL"
+    sasl_mechanism: "SCRAM-SHA-512"
+
+topics:
+  # =========================================================================
+  # 1. COMMON / PUBLIC TOPICS (Accessible by standard application services)
+  # =========================================================================
+  - name: "connect.telemetry.behavior.raw"
+    partitions: 16
+    replication_factor: 3
+    cleanup_policy: "delete"
+    retention_ms: 604800000  # 7 days
+    configs:
+      min.insync.replicas: 2
+      compression.type: "zstd"
+    acls:
+      - principal: "User:app-ingress-service"
+        permission: "Write"
+      - principal: "User:flink-stream-worker"
+        permission: "Read"
+
+  - name: "connect.community.events.public"
+    partitions: 12
+    replication_factor: 3
+    cleanup_policy: "delete"
+    retention_ms: 1209600000 # 14 days
+    configs:
+      min.insync.replicas: 2
+      compression.type: "zstd"
+    acls:
+      - principal: "User:app-ingress-service"
+        permission: "Write"
+      - principal: "User:app-feed-service"
+        permission: "Read"
+
+  - name: "connect.spatial.coordinates.raw"
+    partitions: 16
+    replication_factor: 3
+    cleanup_policy: "delete"
+    retention_ms: 86400000   # 24 hours (ephemeral buffer before Flink obscuring)
+    configs:
+      min.insync.replicas: 2
+    acls:
+      - principal: "User:app-ingress-service"
+        permission: "Write"
+      - principal: "User:flink-spatial-worker"
+        permission: "Read"
+
+  # =========================================================================
+  # 2. SECURE-ELITE TOPICS (STRICT ACL ISOLATION - ELITE WORKERS ONLY)
+  # =========================================================================
+  - name: "connect.elite.telemetry.vault"
+    partitions: 8
+    replication_factor: 3
+    cleanup_policy: "compact,delete"
+    retention_ms: 2592000000 # 30 days
+    configs:
+      min.insync.replicas: 2
+      compression.type: "zstd"
+    acls:
+      - principal: "User:elite-ingress-worker"
+        permission: "Write"
+      - principal: "User:elite-processing-engine"
+        permission: "Read"
+      # PREMIUM INGRESS IS EXPLICITLY DENIED BY BROKER ACL HOOKS
+      - principal: "User:app-ingress-service"
+        permission: "Deny"
+
+  - name: "connect.elite.exclusive.boards"
+    partitions: 6
+    replication_factor: 3
+    cleanup_policy: "delete"
+    retention_ms: 2592000000 # 30 days
+    configs:
+      min.insync.replicas: 2
+    acls:
+      - principal: "User:elite-ingress-worker"
+        permission: "ReadWrite"
+      - principal: "User:app-ingress-service"
+        permission: "Deny"

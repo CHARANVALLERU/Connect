@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hinge App Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        h1 { color: #ff6b6b; }
+        code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>💕 Hinge App Test Page</h1>
+    <p>Testing backend connectivity...</p>
+    
+    <div id="backend-status" class="status info">Checking backend...</div>
+    <div id="frontend-status" class="status info">Checking frontend...</div>
+    
+    <h2>Test Credentials</h2>
+    <div class="info">
+        <p><strong>Elite User:</strong> elite@test.com / ElitePass123!</p>
+        <p><strong>Basic User:</strong> basic@test.com / BasicPass123!</p>
+    </div>
+    
+    <h2>API Endpoints to Test</h2>
+    <ul>
+        <li>Health: <code>http://localhost:5000/health</code></li>
+        <li>Login: <code>POST http://localhost:5000/api/v1/auth/login</code></li>
+        <li>Feed: <code>GET http://localhost:5000/api/v1/discovery/feed</code></li>
+        <li>Chat: <code>GET http://localhost:5000/api/v1/chat/rooms</code></li>
+    </ul>
+    
+    <h2>How to Access the App</h2>
+    <ol>
+        <li>Install <strong>Expo Go</strong> app on your phone</li>
+        <li>Make sure phone is on same WiFi as computer</li>
+        <li>Scan QR code from terminal (should show port 8081 or 8082)</li>
+        <li>Or open <a href="http://localhost:8081">http://localhost:8081</a> in browser</li>
+    </ol>
+    
+    <script>
+        async function checkBackend() {
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                document.getElementById('backend-status').className = 'status success';
+                document.getElementById('backend-status').textContent = 
+                    `✅ Backend Running: ${data.status} at port 5000`;
+            } catch (e) {
+                document.getElementById('backend-status').className = 'status error';
+                document.getElementById('backend-status').textContent = 
+                    '❌ Backend Error: ' + e.message;
+            }
+        }
+        
+        async function checkFrontend() {
+            try {
+                const response = await fetch('http://localhost:8081/status');
+                const data = await response.json();
+                document.getElementById('frontend-status').className = 'status success';
+                document.getElementById('frontend-status').textContent = 
+                    `✅ Frontend Running: ${data['packager-status']} at port 8081`;
+            } catch (e) {
+                try {
+                    const response = await fetch('http://localhost:8082/status');
+                    const data = await response.json();
+                    document.getElementById('frontend-status').className = 'status success';
+                    document.getElementById('frontend-status').textContent = 
+                        `✅ Frontend Running: ${data['packager-status']} at port 8082`;
+                } catch (e2) {
+                    document.getElementById('frontend-status').className = 'status error';
+                    document.getElementById('frontend-status').textContent = 
+                        '❌ Frontend Error: ' + e2.message;
+                }
+            }
+        }
+        
+        checkBackend();
+        checkFrontend();
+    </script>
+</body>
+</html>

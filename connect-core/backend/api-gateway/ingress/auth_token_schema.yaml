@@ -1,0 +1,68 @@
+## Connect Core — Envoy JWT Authentication & Token Parsing Schema
+## Configures the envoy.filters.http.jwt_authn filter for all inbound requests.
+## Tier claims are extracted from JWT payload and injected as x-connect-tier headers
+## so downstream Jev Layer can perform sub-10ms tier gate enforcement.
+
+jwt_providers:
+  connect_identity_provider:
+    issuer: "https://auth.connect.app"
+    audiences:
+      - "connect-mobile-client"
+      - "connect-web-client"
+
+    # JWKS fetched from the identity provider; cached locally for 1h
+    remote_jwks:
+      http_uri:
+        uri: "https://auth.connect.app/.well-known/jwks.json"
+        cluster: connect_auth_cluster
+        timeout: 1s
+      cache_duration: 3600s
+
+    # Forward the validated JWT payload to upstream as a base64 header
+    forward: true
+    forward_payload_header: "x-connect-jwt-payload"
+
+    # Claims extracted and mapped to request metadata for downstream filters
+    claim_to_headers:
+      - header_name: "x-connect-tier"
+        claim_name: "tier"           # Injected by identity service at login time
+      - header_name: "x-connect-user-id"
+        claim_name: "sub"
+      - header_name: "x-connect-niche"
+        claim_name: "niche"
+
+rules:
+  # All elite paths MUST carry a valid JWT with tier=elite
+  - match:
+      prefix: "/api/v1/elite/"
+    requires:
+      provider_and_audiences:
+        provider_name: connect_identity_provider
+        audiences:
+          - "connect-mobile-client"
+          - "connect-web-client"
+
+  # Telemetry and standard API paths require valid JWT (any tier)
+  - match:
+      prefix: "/api/v1/"
+    requires:
+      provider_and_audiences:
+        provider_name: connect_identity_provider
+        audiences:
+          - "connect-mobile-client"
+          - "connect-web-client"
+
+  # Health & readiness probes are exempt from authentication
+  - match:
+      prefix: "/health"
+    requires: {}
+
+token_validation:
+  # Hard-reject tokens that do not carry a recognized tier claim
+  missing_claim_policy: REJECT
+  # Tokens must not be expired; clock skew tolerance of 10s
+  clock_skew_seconds: 10
+  # Tier values accepted by the system — any other value triggers 403
+  allowed_tier_values:
+    - "premium"
+    - "elite"
