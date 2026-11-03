@@ -20,7 +20,6 @@ GoogleService-Info.plist
 
 
 # ── DEPENDENCIES & PACKAGE MANAGERS ──────────────────────────────────────────
-# Root & nested node_modules
 node_modules/
 **/node_modules/
 npm-debug.log*
@@ -44,15 +43,9 @@ expo-env.d.ts
 .cache/
 
 
-# ── NATIVE BUILDS & MOBILE ARTIFACTS (LARGE BINARIES) ────────────────────────
-android/app/build/
-android/.gradle/
-android/local.properties
-android/app/debug/
-android/app/release/
-ios/Pods/
-ios/build/
-ios/DerivedData/
+# ── NATIVE BUILDS & MOBILE ARTIFACTS ─────────────────────────────────────────
+android/
+ios/
 *.ipa
 *.apk
 *.aab
@@ -148,8 +141,7 @@ dmypy.json
 .ipynb_checkpoints
 
 
-# ── MACHINE LEARNING & AI WEIGHTS (LARGE FILES) ──────────────────────────────
-# Ollama / Hermes / HuggingFace model weights & checkpoints
+# ── MACHINE LEARNING & AI WEIGHTS ────────────────────────────────────────────
 *.gguf
 *.ggml
 *.safetensors
@@ -168,7 +160,7 @@ checkpoints/
 **/checkpoints/
 
 
-# ── VECTOR STORES, DATASETS & EMBEDDING CACHES ──────────────────────────────
+# ── VECTOR STORES, DATASETS & EMBEDDING CACHES ───────────────────────────────
 *.faiss
 *.index
 vector_cache/
@@ -240,3 +232,22 @@ audit_results.json
 ehthumbs.db
 Thumbs.db
 desktop.ini
+
+
+# ── LEGACY / UNUSED SCREENS (NOT IN ACTIVE NAV) ──────────────────────────────
+# These exist in the repo for reference but are excluded from typecheck
+# screens/ChatHubScreen.tsx
+# screens/EliteDirectoryScreen.tsx
+# screens/FeedScreen.tsx
+# screens/ProfileStudioScreen.tsx
+# screens/Hinge/
+
+
+# ── DOCKER & INFRA ────────────────────────────────────────────────────────────
+.docker/
+docker-compose.override.yml
+*.dockerenv
+
+
+# ── PACKAGE LOCK (optional — uncomment to commit lockfile) ───────────────────
+# package-lock.json

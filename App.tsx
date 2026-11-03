@@ -1,32 +1,37 @@
-// Main Application Entry - Hinge UI Clone
-import React, { useEffect } from 'react';
-import { StatusBar, StyleSheet, Platform } from 'react-native';
+// Main Application Entry - Connect
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
-import { TierProvider } from './context/TierContext';
+import { TierProvider, useTier } from './context/TierContext';
+import { ConnectStatusBar } from './components/ConnectStatusBar';
+import { elite, premium } from './theme/tokens';
 import AppNavigator from './navigation/AppNavigator';
 
-export default function App() {
-  useEffect(() => {
-    StatusBar.setBarStyle('dark-content');
-    if (Platform.OS === 'android') {
-      (StatusBar as any).setBackgroundColor?.('#ffffff');
-    }
-  }, []);
+function AppChrome({ children }: { children: React.ReactNode }) {
+  const { state } = useTier();
+  const bg = state.isElite ? elite.bg : premium.bg;
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: bg }]} edges={['top', 'bottom', 'left', 'right']}>
+      <ConnectStatusBar />
+      {children}
+    </SafeAreaView>
+  );
+}
 
+export default function App() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
         <AuthProvider>
           <TierProvider>
-            <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
-              <StatusBar barStyle="dark-content" />
+            <AppChrome>
               <NavigationContainer>
                 <AppNavigator />
               </NavigationContainer>
-            </SafeAreaView>
+            </AppChrome>
           </TierProvider>
         </AuthProvider>
       </ThemeProvider>
@@ -37,6 +42,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: premium.bg,
   },
 });

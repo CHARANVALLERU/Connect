@@ -30,15 +30,17 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'LOGIN_REQUEST':
       return { ...state, isLoading: true, error: null };
-    case 'LOGIN_SUCCESS':
+    case 'LOGIN_SUCCESS': {
+      const auth = action.payload as AuthResponse;
       return {
         ...state,
-        user: action.payload as User,
-        isAuthenticated: true,
+        user: auth?.user ?? null,
+        isAuthenticated: Boolean(auth?.user),
         isLoading: false,
-        token: (action.payload as AuthResponse)?.token || state.token,
+        token: auth?.token || state.token,
         error: null,
       };
+    }
     case 'LOGIN_FAILURE':
       return { ...state, isLoading: false, error: action.payload as string };
     case 'LOGOUT':

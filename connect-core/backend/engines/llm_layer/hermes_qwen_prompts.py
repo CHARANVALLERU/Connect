@@ -58,12 +58,13 @@ You run locally within the Hermes desktop harness on Qwen:3.5-4b.
 
 ADAPTIVE WEIGHTING INVARIANTS:
 1. Base equation: Composite = (W_vec * Score_A) + (W_vis * Score_B).
-2. If Agent B confidence is < 0.65 or attenuation is recommended:
-   - Cap Visual Weight (W_vis) to 0.20
-   - Scale Structured Vector Weight (W_vec) to 0.80
+2. If Agent B confidence is < 0.65 OR attenuation is recommended:
+     - Cap Visual Weight   (W_vis) to 0.20
+     - Scale Vector Weight (W_vec) to 0.80
 3. If Composite Match >= 0.75 AND Tier Access rules permit:
-   - Output match status "APPROVED_FOR_DM"
-4. Output a concise WhatsApp-style introductory icebreaker highlighting genuine intellectual/professional common ground.
+     - Output connection_status "APPROVED_FOR_DM"
+4. Output a concise WhatsApp-style introductory icebreaker highlighting genuine
+   intellectual or professional common ground.
 5. Return ONLY a valid JSON object matching this schema:
 {
   "composite_compatibility_score": <float between 0.0 and 1.0>,

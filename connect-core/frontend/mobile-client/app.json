@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Connect",
+    "slug": "connect-mobile-client",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.connect.mobile"
+    },
+    "android": {
+      "package": "app.connect.mobile"
+    }
+  }
+}

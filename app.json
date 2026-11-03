@@ -1,31 +1,25 @@
 {
   "expo": {
-    "name": "Hinge Dating App",
-    "slug": "hinge-dating-app",
+    "name": "Connect",
+    "slug": "connect-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
+    "userInterfaceStyle": "automatic",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.hinge.dating.app"
+      "bundleIdentifier": "com.connect.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0B0B0C"
       },
-      "package": "com.hinge.dating.app"
+      "package": "com.connect.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "entryPoint": "./index.js"
+    }
   }
 }

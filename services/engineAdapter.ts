@@ -89,38 +89,61 @@ const mockFetch = async <T>(endpoint: string, options: RequestInit = {}): Promis
 };
 
 // Mock implementation functions
-const mockAuthLogin = async (_: RequestInit): Promise<ApiResponse<AuthResponse>> => {
+const mockAuthLogin = async (options: RequestInit): Promise<ApiResponse<AuthResponse>> => {
+  let email = 'test@example.com';
+  try {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : {};
+    email = String(body.email || email).toLowerCase();
+  } catch {
+    /* ignore */
+  }
+  const isElite = email.includes('elite');
   const mockUser: User = {
-    id: 'user_123',
-    email: 'test@example.com',
-    name: 'Alex Johnson',
+    id: isElite ? 'user_elite_901' : 'user_premium_102',
+    email,
+    name: isElite ? 'Alex Johnson' : 'Sam Rivera',
     age: 28,
-    bio: 'Software engineer who loves hiking and photography. Looking for meaningful connections.',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-    tier: Math.random() > 0.5 ? 'Premium' : 'Elite',
+    bio: 'Building high-signal niche networks. Dual-engine matching, zero raw finance storage.',
+    avatar: isElite
+      ? 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=80'
+      : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+    tier: isElite ? 'Elite' : 'Premium',
     primaryNiche: 'developer',
+    ghostMode: isElite,
     obscuredDistance: 'Less than 5 km away',
-    cognitiveComplexityLevel: 'High',
-    interests: ['Hiking', 'Photography', 'Travel', 'Cooking'],
+    cognitiveComplexityLevel: isElite ? 'Advanced' : 'High',
+    interests: ['Systems', 'Communities', 'Travel', 'Product'],
     location: { sector: 'dr5ru', city: 'New York', country: 'USA' },
-    preferences: { minAge: 25, maxAge: 35, radius: 25, lookingFor: ['Female', 'Non-binary'], preferredNiches: ['developer', 'creative'] },
+    preferences: {
+      minAge: 25,
+      maxAge: 35,
+      radius: 25,
+      lookingFor: ['Meaningful connection'],
+      preferredNiches: ['developer', 'investor'],
+    },
     badges: [
-      { id: 'badge_1', name: 'Early Adopter', description: 'Joined during beta launch', icon: '🏅', rarity: 'Rare', earnedAt: '2026-01-15' },
-      { id: 'badge_2', name: 'Conversation Starter', description: 'Sent 50+ messages', icon: '💬', rarity: 'Epic', earnedAt: '2026-03-22' }
+      {
+        id: 'badge_1',
+        name: isElite ? 'Elite Verified' : 'Early Adopter',
+        description: isElite ? 'Tokenized billing attested' : 'Joined during beta',
+        icon: isElite ? '✦' : '🏅',
+        rarity: isElite ? 'Legendary' : 'Rare',
+        earnedAt: '2026-01-15',
+      },
     ],
     stats: { matches: 12, messages: 87, profileViews: 156, posts: 8, compatibilityScore: 85 },
     createdAt: '2026-01-15T10:30:00Z',
-    lastActive: new Date().toISOString()
+    lastActive: new Date().toISOString(),
   };
-  
+
   return {
     success: true,
     data: {
       user: mockUser,
       token: 'mock_jwt_token_' + Math.random().toString(36).substr(2, 9),
       refreshToken: 'mock_refresh_token_' + Math.random().toString(36).substr(2, 9),
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-    }
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    },
   };
 };
 

@@ -1,15 +1,26 @@
 import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
+import { useTier } from '../context/TierContext';
+import { paletteFor } from '../theme/tokens';
 import LoginScreen from '../screens/LoginScreen';
-import HingeNavigator from './HingeNavigator';
-import FeedScreen from '../screens/FeedScreen';
-import EliteDirectoryScreen from '../screens/EliteDirectoryScreen';
-import ChatHubScreen from '../screens/ChatHubScreen';
-import ProfileStudioScreen from '../screens/ProfileStudioScreen';
+import ConnectNavigator from './ConnectNavigator';
 
 const Stack = createNativeStackNavigator();
+
+function LoadingScreen() {
+  const { state } = useTier();
+  const c = paletteFor(state.isElite);
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: c.bg }}>
+      <Text style={{ fontSize: 28, fontWeight: '800', letterSpacing: 6, color: c.accent }}>
+        CONNECT
+      </Text>
+      <ActivityIndicator style={{ marginTop: 20 }} color={c.accent} />
+    </View>
+  );
+}
 
 export default function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -23,32 +34,12 @@ export default function AppNavigator() {
   }
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}
-    >
+    <Stack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
       {!isAuthenticated ? (
         <Stack.Screen name="Login" component={LoginScreen} />
       ) : (
-        <>
-          <Stack.Screen name="HingeMain" component={HingeNavigator} />
-          <Stack.Screen name="Feed" component={FeedScreen} />
-          <Stack.Screen name="EliteDirectory" component={EliteDirectoryScreen} />
-          <Stack.Screen name="ChatHub" component={ChatHubScreen} />
-          <Stack.Screen name="ProfileStudio" component={ProfileStudioScreen} />
-        </>
+        <Stack.Screen name="Main" component={ConnectNavigator} />
       )}
     </Stack.Navigator>
   );
 }
-
-const LoadingScreen: React.FC = () => {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#ffffff' }}>
-      <Text style={{ fontSize: 64 }}>💕</Text>
-      <Text style={{ fontSize: 42, fontWeight: '300', letterSpacing: 2, marginTop: 16, color: '#000000' }}>hinge</Text>
-    </View>
-  );
-};

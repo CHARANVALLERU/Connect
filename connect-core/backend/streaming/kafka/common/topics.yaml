@@ -1,0 +1,34 @@
+# Premium / public Kafka topics — open telemetry & community behavior
+bootstrap_servers: localhost:9092
+tier: premium
+topics:
+  - name: user-behavior-premium
+    partitions: 8
+    replication_factor: 3
+    cleanup_policy: compact
+    description: Forum posts, dwell times, vocabulary telemetry for Premium cohort
+
+  - name: proximity-updates-premium
+    partitions: 16
+    replication_factor: 3
+    cleanup_policy: delete
+    retention_ms: 86400000
+    description: Geohash-obscured proximity events (never raw lat/lng)
+
+  - name: media-uploads-premium
+    partitions: 4
+    replication_factor: 3
+    description: Profile & UGC media metadata for Agent B screening
+
+  - name: connect.telemetry.behavior.raw
+    partitions: 8
+    replication_factor: 3
+    description: Ingress buffer fed by API gateway before Jev screening
+
+acls:
+  - principal: User:PremiumConsumer
+    operation: Read
+    topic: user-behavior-premium
+  - principal: User:PremiumProducer
+    operation: Write
+    topic: user-behavior-premium

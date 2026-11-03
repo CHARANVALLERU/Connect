@@ -1,8 +1,43 @@
 {
-  "compilerOptions": {},
   "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "jsx": "react-native",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "App.tsx",
+    "index.js",
+    "declarations.d.ts",
+    "components/**/*",
+    "context/**/*",
+    "data/**/*",
+    "hooks/**/*",
+    "navigation/**/*",
+    "screens/**/*",
+    "services/**/*",
+    "theme/**/*",
+    "config/**/*"
+  ],
   "exclude": [
     "node_modules",
-    "my-dating-app"
+    "my-dating-app",
+    "connect-core",
+    "babel.config.js",
+    "metro.config.js",
+    "screens/Hinge",
+    "screens/ChatHubScreen.tsx",
+    "screens/EliteDirectoryScreen.tsx",
+    "screens/FeedScreen.tsx",
+    "screens/ProfileStudioScreen.tsx",
+    "components/MessageBubble.tsx"
   ]
 }

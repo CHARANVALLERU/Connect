@@ -1,0 +1,37 @@
+# Elite isolated Kafka partitions — Premium principals have zero ACL rights
+bootstrap_servers: localhost:9092
+tier: elite
+isolation: strict
+topics:
+  - name: user-behavior-elite
+    partitions: 4
+    replication_factor: 3
+    cleanup_policy: compact
+    min_insync_replicas: 2
+    description: Elite-only behavioral stream; dropped if queried by Premium
+
+  - name: proximity-updates-elite
+    partitions: 4
+    replication_factor: 3
+    min_insync_replicas: 2
+    description: Elite geohash cells; invisible to Premium discovery
+
+  - name: connect.elite.telemetry.vault
+    partitions: 4
+    replication_factor: 3
+    min_insync_replicas: 2
+    description: Secure vault topic for Elite identity attestation events
+
+acls:
+  - principal: User:EliteConsumer
+    operation: All
+    topic: user-behavior-elite
+  - principal: User:EliteProducer
+    operation: Write
+    topic: user-behavior-elite
+  - principal: User:PremiumConsumer
+    operation: Deny
+    topic: user-behavior-elite
+  - principal: User:ConnectAdmin
+    operation: All
+    topic: "*"

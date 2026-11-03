@@ -11,7 +11,7 @@ class JevSafetyNoul(BaseModel):
     content_clearance: Literal["SAFE", "FLAGGED", "VIOLATION"] = Field(
         description="Real-time execution classification boundary tracker."
     )
-    applied_rules: List[str] = Field(default=[], description="List of matched platform constraint keys.")
+    applied_rules: List[str] = Field(default_factory=list, description="List of matched platform constraint keys.")
 
 class JevCognitiveScore(BaseModel):
     fluid_intelligence_tier: Literal["LOW", "MEDIUM", "HIGH", "ADVANCED"] = Field(
